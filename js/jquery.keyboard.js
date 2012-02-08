@@ -412,6 +412,7 @@ $.keyboard = function(el, options){
 		base.$allKeys
 			.bind(o.keyBinding.split(' ').join('.keyboard ') + '.keyboard repeater.keyboard', function(e){
 				// 'key', { action: doAction, original: n, curTxt : n, curNum: 0 }
+				$(this).addClass('ui-state-pressed');
 				var txt, key = $.data(this, 'key'), action = key.action.split(':')[0];
 				base.$preview.focus();
 				// Start caret in IE when not focused (happens with each virtual keyboard button click
@@ -477,6 +478,7 @@ $.keyboard = function(el, options){
 			.bind('mouseup.keyboard mouseleave.kb touchend.kb touchmove.kb touchcancel.kb', function(){
 				if (base.isVisible) { base.$preview.focus(); }
 				base.mouseRepeat = [false,''];
+				$(this).removeClass('ui-state-pressed');
 				return false;
 			})
 			// no mouse repeat for action keys (shift, ctrl, alt, meta, etc)
@@ -1411,3 +1413,4 @@ $.fn.caret = function(options,opt2) {
 	}
 };
 })(jQuery, 'length', 'createRange', 'duplicate');
+
