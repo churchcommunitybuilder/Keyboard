@@ -334,7 +334,9 @@ $.keyboard = function(el, options){
 
 					// Escape will hide the keyboard
 					case 27:
-						base.close();
+						if ( o.closeOnEscape ) {
+							base.close();
+						}
 						return false;
 				}
 
@@ -750,13 +752,15 @@ $.keyboard = function(el, options){
 	base.escClose = function(e){
 		if ( !base.isVisible ) { return; }
 		// ignore autoaccept if using escape - good idea?
-		if ( e.type === 'keyup' && e.which === 27 ) { base.close(); }
-		if ( e.type === 'mousedown' && ( e.target !== base.el && $(e.target).closest('.ui-keyboard')[0] !== base.$keyboard[0]) ) {
-			// stop propogation in IE - an input getting focus doesn't open a keyboard if one is already open
-			if ( base.allie ) {
-				e.preventDefault();
+		if ( o.closeOnEscape ) {
+			if ( e.type === 'keyup' && e.which === 27 ) { base.close(); }
+			if ( e.type === 'mousedown' && ( e.target !== base.el && $(e.target).closest('.ui-keyboard')[0] !== base.$keyboard[0]) ) {
+				// stop propogation in IE - an input getting focus doesn't open a keyboard if one is already open
+				if ( base.allie ) {
+					e.preventDefault();
+				}
+				base.close(o.autoAccept);
 			}
-			base.close(o.autoAccept);
 		}
 	};
 
@@ -1229,6 +1233,9 @@ $.keyboard = function(el, options){
 			buttonAction   : 'ui-state-active', // Action keys (e.g. Accept, Cancel, Tab, etc); this replaces "actionClass" option
 			buttonDisabled : 'ui-state-disabled' // used when disabling the decimal button {dec} when a decimal exists in the input area
 		},
+
+		// Escape key will close the keyboard
+		closeOnEscape : true,
 
 		// *** Useability ***
 		// Auto-accept content when clicking outside the keyboard (popup will close)
