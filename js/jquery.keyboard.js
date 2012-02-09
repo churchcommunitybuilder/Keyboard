@@ -248,11 +248,17 @@ $.keyboard = function(el, options){
 
 		base.$keyboard.position(position); // position after keyboard is visible (required for UI position utility) and appropriately sized (*cough*)
 
+		/**
+		 * Commenting this out because it will cause a keyboard not to show
+		 * because it isn't shown on the screen.
+		 * This is because I have to hack the show hide in a special case
+		 * to get events to actually work.
 		$(window).resize(function(){
 			if (base.isVisible) {
 				base.$keyboard.position(position);
 			}
 		});
+		**/
 
 		base.$preview.focus();
 		base.isVisible = true;
@@ -528,6 +534,8 @@ $.keyboard = function(el, options){
 			.val( base.$preview.val().substr(0, pos.start - (bksp ? 1 : 0)) + txt + base.$preview.val().substr(pos.end) )
 			.caret(t, t)
 			.scrollLeft(scrL);
+
+		base.$preview.trigger('change');
 
 		if (base.checkCaret) { base.lastCaret = { start: t, end: t }; } // save caret in case of bksp
 
@@ -1413,4 +1421,3 @@ $.fn.caret = function(options,opt2) {
 	}
 };
 })(jQuery, 'length', 'createRange', 'duplicate');
-
