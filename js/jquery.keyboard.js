@@ -237,6 +237,7 @@ $.keyboard = function(el, options){
 			.show();
 
 		// adjust keyboard preview window width - save width so IE won't keep expanding (fix issue #6)
+		/*
 		if (o.usePreview && base.msie) {
 			if (typeof base.width === 'undefined') {
 				base.$preview.hide(); // preview is 100% browser width in IE7, so hide the damn thing
@@ -244,7 +245,7 @@ $.keyboard = function(el, options){
 				base.$preview.show();
 			}
 			base.$preview.width(base.width);
-		}
+		}*/
 
 		base.$keyboard.position(position); // position after keyboard is visible (required for UI position utility) and appropriately sized (*cough*)
 
@@ -419,7 +420,7 @@ $.keyboard = function(el, options){
 			.bind(o.keyBinding.split(' ').join('.keyboard ') + '.keyboard repeater.keyboard', function(e){
 				// 'key', { action: doAction, original: n, curTxt : n, curNum: 0 }
 				$(this).addClass('ui-state-pressed');
-				var txt, key = $.data(this, 'key'), action = key.action.split(':')[0];
+				var txt, key = $.data(this, 'key'), action = key.action.split('::')[0];
 				base.$preview.focus();
 				// Start caret in IE when not focused (happens with each virtual keyboard button click
 				if (base.checkCaret) { base.$preview.caret( base.lastCaret.start, base.lastCaret.end ); }
@@ -461,7 +462,7 @@ $.keyboard = function(el, options){
 					$this
 						.removeClass( (base.el.type === 'password') ? '' : o.css.buttonHover) // needed or IE flickers really bad
 						.attr('title', function(i,t){ return (t === o.wheelMessage) ? '' : t; })
-						.find('span').text( key.original ); // restore original button text
+						.find('span').html( key.original ); // restore original button text
 				}
 			})
 			// Allow mousewheel to scroll through other key sets of the same key
@@ -795,13 +796,13 @@ $.keyboard = function(el, options){
 			map = n.replace(/\(([^()]+)\)/, ''); // remove "(A)", left with "\u0391:alpha"
 			m = n.match(/\(([^()]+)\)/)[1]; // extract "A" from "(A)"
 			n = map;
-			nm = map.split(':');
+			nm = map.split('::');
 			map = (nm[0] !== '' && nm.length > 1) ? nm[0] : map; // get "\u0391" from "\u0391:alpha"
 			base.mappedKeys[m] = map;
 		}
 
 		// find key label
-		nm = n.split(':');
+		nm = n.split('::');
 		if (nm[0] === '' && nm[1] === '') { n = ':'; } // corner case of ":(:):;" reduced to "::;", split as ["", "", ";"]
 		n = (nm[0] !== '' && nm.length > 1) ? $.trim(nm[0]) : n;
 		t = (nm.length > 1) ? $.trim(nm[1]).replace(/_/g, " ") || '' : ''; // added to title
@@ -984,7 +985,7 @@ $.keyboard = function(el, options){
 						} else {
 
 							// regular button (not an action key)
-							base.acceptedKeys.push(keys[key].split(':')[0]);
+							base.acceptedKeys.push(keys[key].split('::')[0]);
 							base.addKey(keys[key], keys[key], true);
 
 						}
@@ -1057,6 +1058,9 @@ $.keyboard = function(el, options){
 					// textarea & input - shift + enter = accept (no navigation)
 					return base.close(true);
 				}
+			}
+			else if ( o.enterKeyAccepts ) {
+				return base.close(true);
 			}
 			// input only - enterMod + enter to navigate
 			if (o.enterNavigation && (tag !== 'TEXTAREA' || e[o.enterMod])) {
@@ -1211,25 +1215,25 @@ $.keyboard = function(el, options){
 
 		// *** change keyboard language & look ***
 		display : {
-			'a'      : '\u2714:Accept (Shift-Enter)', // check mark - same action as accept
-			'accept' : 'Accept:Accept (Shift-Enter)',
-			'alt'    : 'AltGr:Alternate Graphemes',
-			'b'      : '\u2190:Backspace',    // Left arrow (same as &larr;)
-			'bksp'   : 'Bksp:Backspace',
-			'c'      : '\u2716:Cancel (Esc)', // big X, close - same action as cancel
-			'cancel' : 'Cancel:Cancel (Esc)',
-			'clear'  : 'C:Clear',             // clear num pad
-			'combo'  : '\u00f6:Toggle Combo Keys',
-			'dec'    : '.:Decimal',           // decimal point for num pad (optional), change '.' to ',' for European format
-			'e'      : '\u21b5:Enter',        // down, then left arrow - enter symbol
-			'enter'  : 'Enter:Enter',
-			'lock'   : '\u21ea Lock:Caps Lock', // caps lock
-			's'      : '\u21e7:Shift',        // thick hollow up arrow
-			'shift'  : 'Shift:Shift',
-			'sign'   : '\u00b1:Change Sign',  // +/- sign for num pad
-			'space'  : '&nbsp;:Space',
-			't'      : '\u21e5:Tab',          // right arrow to bar (used since this virtual keyboard works with one directional tabs)
-			'tab'    : '\u21e5 Tab:Tab'       // \u21b9 is the true tab symbol (left & right arrows)
+			'a'      : '\u2714::Accept (Shift-Enter)', // check mark - same action as accept
+			'accept' : 'Accept::Accept (Shift-Enter)',
+			'alt'    : 'AltGr::Alternate Graphemes',
+			'b'      : '\u2190::Backspace',    // Left arrow (same as &larr;)
+			'bksp'   : 'Bksp::Backspace',
+			'c'      : '\u2716::Cancel (Esc)', // big X, close - same action as cancel
+			'cancel' : 'Cancel::Cancel (Esc)',
+			'clear'  : 'C::Clear',             // clear num pad
+			'combo'  : '\u00f6::Toggle Combo Keys',
+			'dec'    : '.::Decimal',           // decimal point for num pad (optional), change '.' to ',' for European format
+			'e'      : '\u21b5::Enter',        // down, then left arrow - enter symbol
+			'enter'  : 'Enter::Enter',
+			'lock'   : '\u21ea Lock::Caps Lock', // caps lock
+			's'      : '\u21e7::Shift',        // thick hollow up arrow
+			'shift'  : 'Shift::Shift',
+			'sign'   : '\u00b1::Change Sign',  // +/- sign for num pad
+			'space'  : '&nbsp;::Space',
+			't'      : '\u21e5::Tab',          // right arrow to bar (used since this virtual keyboard works with one directional tabs)
+			'tab'    : '\u21e5 Tab::Tab'       // \u21b9 is the true tab symbol (left & right arrows)
 		},
 
 		// Message added to the key title while hovering, if the mousewheel plugin exists
@@ -1266,6 +1270,7 @@ $.keyboard = function(el, options){
 		// enter for next input; shift-enter accepts content & goes to next
 		// shift + "enterMod" + enter ("enterMod" is the alt as set below) will accept content and go to previous in a textarea
 		enterNavigation : false,
+		enterKeyAccepts : false,
 		// mod key options: 'ctrlKey', 'shiftKey', 'altKey', 'metaKey' (MAC only)
 		enterMod : 'altKey', // alt-enter to go to previous; shift-alt-enter to accept & go to previous
 
